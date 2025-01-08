@@ -68,9 +68,9 @@ const login = async (req, res) => {
 
     //3. Validate the data (if empty, stop the process & send res)
     if (!email || !password) {
-        res.json({
-            "success": false,
-            "message": "Please enter all fields!"
+        res.status(400).json({
+            success: false,
+            message: "Please enter all fields!"
         })
 
     }
@@ -85,7 +85,7 @@ const login = async (req, res) => {
         const findUser = await userModel.findOne({ email: email });
 
         if (!findUser) {
-            return res.json({
+            return res.status(400).json({
                 "success": false,
                 "message": "user with this email doesn't exist"
             })
@@ -95,7 +95,7 @@ const login = async (req, res) => {
         const isValidPassword = await bcrypt.compare(password, findUser.password)
 
         if (!isValidPassword) {
-            return res.json({
+            return res.status(400).json({
                 "success": false,
                 "message": "Password doesn't match"
             })
@@ -110,9 +110,9 @@ const login = async (req, res) => {
         //5.1 If login successful send response
         //5.1.1 stop the process
         console.log(token)
-        return res.json({
-            "success": true,
-            "message": "user login successful",
+        return res.status(200).json({
+            success: true,
+            message: "user login successful",
             "token": token,
             "userData": { findUser }
         })
@@ -120,8 +120,8 @@ const login = async (req, res) => {
     } catch (error) {
         console.log(error)
         res.json({
-            "success": false,
-            "message": "Internal server error!"
+            success: false,
+            message: "Internal server error!"
         })
     }
 }

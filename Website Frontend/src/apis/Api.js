@@ -10,6 +10,13 @@ const Api = axios.create({
 
 })
 
+//config for token
+const config = {
+    headers: {
+        'authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+
+}
 
 //register api 
 export const registerUserApi = (data) => Api.post("/api/user/create", data)
@@ -18,10 +25,3 @@ export const registerUserApi = (data) => Api.post("/api/user/create", data)
 export const loginUserApi = (data) => Api.post("/api/user/login", data)
 
 
-//config for token
-const config = {
-    headers: {
-        'authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-
-} 

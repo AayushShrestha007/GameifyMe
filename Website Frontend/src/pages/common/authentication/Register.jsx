@@ -196,7 +196,7 @@ const Register = () => {
             <FormWrapper>
                 <Title>Create An Account</Title>
                 <StyledForm>
-                    {/* First Name */}
+
                     <Label>First Name</Label>
                     <Input
                         onChange={handleFirstName}
@@ -206,7 +206,7 @@ const Register = () => {
                     />
                     {firstNameError && <ErrorMessage>{firstNameError}</ErrorMessage>}
 
-                    {/* Last Name */}
+
                     <Label>Last Name</Label>
                     <Input
                         onChange={handleLastName}
@@ -216,7 +216,7 @@ const Register = () => {
                     />
                     {lastNameError && <ErrorMessage>{lastNameError}</ErrorMessage>}
 
-                    {/* Email */}
+
                     <Label>Email</Label>
                     <Input
                         onChange={handleEmail}
@@ -226,7 +226,7 @@ const Register = () => {
                     />
                     {emailError && <ErrorMessage>{emailError}</ErrorMessage>}
 
-                    {/* Password */}
+
                     <Label>Password</Label>
                     <Input
                         onChange={handlePassword}
@@ -236,7 +236,7 @@ const Register = () => {
                     />
                     {passwordError && <ErrorMessage>{passwordError}</ErrorMessage>}
 
-                    {/* Confirm Password */}
+
                     <Label>Confirm Password</Label>
                     <Input
                         onChange={handleConfirmPassword}
@@ -246,7 +246,7 @@ const Register = () => {
                     />
                     {confirmPasswordError && <ErrorMessage>{confirmPasswordError}</ErrorMessage>}
 
-                    {/* Phone */}
+
                     <Label>Phone</Label>
                     <Input
                         onChange={handlePhone}
