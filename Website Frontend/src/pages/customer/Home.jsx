@@ -7,6 +7,7 @@ const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 40px;
   width: 100%;
 `;
 
@@ -95,8 +96,8 @@ const Home = () => {
         </BottomImagesRow>
 
 
-       
-        <Link to="/">
+
+        <Link to="/choose-style">
           <GiftButton>Get The Perfect Gift</GiftButton>
         </Link>
       </HomeContainer>

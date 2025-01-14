@@ -26,6 +26,19 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    address: {
+        type: String,
+        required: true,
+    },
+    city: {
+        type: String,
+        required: true,
+    },
+    postalCode: {
+        type: String,
+        required: true,
+    },
+
     resetPasswordOtp: {
         type: Number,
         default: null,

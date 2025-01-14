@@ -1,172 +1,53 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { loginUserApi } from '../../apis/Api';
+import AdminNavbar from '../../components/AdminNavbar';
 
-const Container = styled.div`
+const DashboardContainer = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 `;
 
-const LoginFormWrapper = styled.div`
-  display: flex;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  /* You can remove the display:flex if you want a single-column layout */
-`;
-
-const LoginForm = styled.div`
-  width: 300px;
-  padding: 40px;
-  text-align: center;
-  margin: auto; /* centers the form if using flex above */
-`;
-
-const Title = styled.h2`
-  margin-bottom: 20px;
-  font-size: 24px;
+const Heading = styled.h1`
+  font-size: 32px;
   color: #333;
+  margin-bottom: 40px;
 `;
 
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-`;
-
-const Button = styled.button`
-  width: 100%;
-  padding: 10px;
+const AddProductButton = styled.button`
+  padding: 12px 24px;
+  background-color: #FECF08;
+  color: black;
   border: none;
   border-radius: 5px;
-  background-color: #108A00;
-  color: white;
-  font-size: 16px;
   cursor: pointer;
-  margin-top: 10px;
+  font-size: 18px;
+  margin-bottom: 20px;
 `;
 
-const Text = styled.p`
-  margin-top: 20px;
-  font-size: 14px;
-  color: #666;
-`;
+const AdminDashboard = () => {
+  const navigate = useNavigate();
 
-const ErrorMessage = styled.p`
-  color: red;
-  font-size: 14px;
-  margin: 5px 0 0 0;
-  text-align: left;
-`;
+  const handleAddProduct = () => {
+    navigate('/admin/product-management');
+  };
 
-const LoginPage = () => {
-
-    // State
-
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    // Error states
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-
-    // Navigation
-    const navigate = useNavigate();
-
-
-    // Validation
-
-    const validate = () => {
-        let isValid = true;
-
-        setEmailError('');
-        setPasswordError('');
-
-        if (email.trim() === '' || !email.includes('@')) {
-            setEmailError('Valid email is required');
-            isValid = false;
-        }
-
-        if (password.trim() === '') {
-            setPasswordError('Password is required');
-            isValid = false;
-        }
-
-        return isValid;
-    };
-
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!validate()) return;
-
-        const data = { email, password };
-
-        loginUserApi(data)
-            .then((res) => {
-                if (res.data.success === false) {
-                    toast.error(res.data.message)
-                }
-                else {
-                    toast.success(res.data.message);
-
-                    // Store token in localStorage
-                    localStorage.setItem('token', res.data.token);
-
-                    // Store user data
-                    const convertedData = JSON.stringify(res.data.userData);
-                    localStorage.setItem('user', convertedData);
-                }
-            })
-            .catch((error) => {
-                if (error.response && error.response.data) {
-                    toast.error(error.response.data.message);
-                } else {
-                    toast.error('Something went wrong during login');
-                }
-                console.error(error);
-            });
-    };
-
-
-    return (
-        <Container>
-            <LoginFormWrapper>
-                <LoginForm>
-                    <Title>This Is Temporary Admin Dashboard For Testing</Title>
-                    <Input
-                        type="text"
-                        placeholder="Email"
-                        className="form-control"
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    {emailError && <ErrorMessage>{emailError}</ErrorMessage>}
-
-                    <Input
-                        type="password"
-                        placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="form-control"
-                    />
-                    {passwordError && <ErrorMessage>{passwordError}</ErrorMessage>}
-
-                    <Button onClick={handleSubmit}>Login</Button>
-
-                    <Text>
-                        Don’t have an account? <Link to="/register">Register</Link>
-                    </Text>
-                </LoginForm>
-            </LoginFormWrapper>
-        </Container>
-    );
+  return (
+    <>
+      <AdminNavbar />
+      <DashboardContainer>
+        <Heading>Manage Your Orders</Heading>
+        <AddProductButton onClick={handleAddProduct}>
+          Manage Products
+        </AddProductButton>
+        {/* Future content for managing orders can be added here */}
+      </DashboardContainer>
+    </>
+  );
 };
 
-export default LoginPage;
+export default AdminDashboard;

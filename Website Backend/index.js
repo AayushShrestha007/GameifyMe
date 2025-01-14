@@ -42,8 +42,11 @@ app.get('/test', (req, res) => {
 })
 
 
-// configuring routes of user 
+// configuring routes 
 app.use('/api/user', require('./routes/userRoutes'))
+app.use('/api/gameOption', require('./routes/gameOptionRoutes'))
+app.use('/api/cart', require('./routes/cartRoutes'))
+app.use('/api/order', require('./routes/orderRoutes'))
 
 //Starting the server
 app.listen(PORT, () => {

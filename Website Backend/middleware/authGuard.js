@@ -39,7 +39,7 @@ const authGuard = (req, res, next) => {
 
 
 const adminGuard = (req, res, next) => {
-    // Make sure authGuard ran first to set req.user
+
     if (!req.user) {
         return res.status(401).json({
             success: false,

@@ -13,6 +13,7 @@ const gameOptionSchema = new mongoose.Schema(
     basePrice: {
       type: Number,
       default: 0,
+      required: true,
     },
     exampleImages: [
       {

@@ -11,16 +11,36 @@ const jwt = require('jsonwebtoken');
 //code for registration
 const createUser = async (req, res) => {
     console.log(req.body);
-    const { firstName, lastName, email, password, phone } = req.body;
+    const {
+        firstName,
+        lastName,
+        email,
+        password,
+        phone,
+        address,
+        city,
+        postalCode
+    } = req.body;
 
-    if (!firstName || !lastName || !email || !password || !phone) {
+    // Validate required fields
+    if (
+        !firstName ||
+        !lastName ||
+        !email ||
+        !password ||
+        !phone ||
+        !address ||
+        !city ||
+        !postalCode
+    ) {
         return res.status(400).json({
             success: false,
-            message: "Please enter all fields!"
+            message: "Please enter all fields (name, email, phone, address, city, postal code, etc.)!"
         });
     }
 
     try {
+        // Check if user already exists
         const existingUser = await userModel.findOne({ email: email });
         if (existingUser) {
             return res.status(409).json({
@@ -29,15 +49,20 @@ const createUser = async (req, res) => {
             });
         }
 
+        // Hash password
         const randomSalt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, randomSalt);
 
+        // Create new user with additional fields
         const newUser = new userModel({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
+            firstName,
+            lastName,
+            email,
             password: hashedPassword,
-            phone: phone,
+            phone,
+            address,
+            city,
+            postalCode
         });
 
         await newUser.save();
@@ -53,78 +78,64 @@ const createUser = async (req, res) => {
             message: "Internal server error!"
         });
     }
-}
+};
 
 //code for login
 
 
 const login = async (req, res) => {
-
-    //1. Check incoming data
     console.log(req.body);
-
-    //2. Destructure the incoming data
     const { email, password } = req.body;
 
-    //3. Validate the data (if empty, stop the process & send res)
     if (!email || !password) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: "Please enter all fields!"
-        })
-
+        });
     }
 
-    //4. Error handling (try/catch)
-
-    //5.1 If username and password don't match-> send response 
     try {
-
-        // find user 
-
         const findUser = await userModel.findOne({ email: email });
 
         if (!findUser) {
             return res.status(400).json({
-                "success": false,
-                "message": "user with this email doesn't exist"
-            })
+                success: false,
+                message: "User with this email doesn't exist"
+            });
         }
 
-        //compare password
-        const isValidPassword = await bcrypt.compare(password, findUser.password)
+        const isValidPassword = await bcrypt.compare(password, findUser.password);
 
         if (!isValidPassword) {
             return res.status(400).json({
-                "success": false,
-                "message": "Password doesn't match"
-            })
+                success: false,
+                message: "Password doesn't match"
+            });
         }
 
-        //token (Generate- User data + key)
         const token = await jwt.sign(
-            { id: findUser._id },
+            { id: findUser._id, isAdmin: findUser.isAdmin },
             process.env.JWT_SECRET
-        )
+        );
 
-        //5.1 If login successful send response
-        //5.1.1 stop the process
-        console.log(token)
+        const isAdmin = findUser.isAdmin; // Check if the user is an admin
+
         return res.status(200).json({
             success: true,
-            message: "user login successful",
-            "token": token,
-            "userData": { findUser }
-        })
+            message: isAdmin ? "admin login successful" : "user login successful",
+            token: token,
+            userData: { findUser }
+        });
 
     } catch (error) {
-        console.log(error)
-        res.json({
+        console.log(error);
+        return res.status(500).json({
             success: false,
             message: "Internal server error!"
-        })
+        });
     }
-}
+};
+
 
 // //forgot password by usign phone Number
 // const forgotPassword = async (req, res) => {

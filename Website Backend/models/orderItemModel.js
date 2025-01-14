@@ -7,7 +7,7 @@ const orderItemSchema = new Schema(
     {
         order: {
             type: Schema.Types.ObjectId,
-            ref: 'orders',  // matches the "orders" model name
+            ref: 'orders',  
             required: true,
         },
         gameOption: {
