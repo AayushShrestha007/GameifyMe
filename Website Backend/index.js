@@ -4,6 +4,7 @@ const connectDatabase = require('./database/database');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const acceptFormData = require('express-fileupload')
+const bodyParser = require("body-parser")
 
 
 //creating an express application
@@ -20,6 +21,7 @@ app.use(acceptFormData());
 
 //Express Json Config
 app.use(express.json());
+app.use(bodyParser.json());
 
 
 //make a static public folder
@@ -47,6 +49,8 @@ app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/gameOption', require('./routes/gameOptionRoutes'))
 app.use('/api/cart', require('./routes/cartRoutes'))
 app.use('/api/order', require('./routes/orderRoutes'))
+app.use('/api/khalti', require('./routes/paymentRoutes'))
+app.use('/api/email', require('./routes/emailRoutes'))
 
 //Starting the server
 app.listen(PORT, () => {

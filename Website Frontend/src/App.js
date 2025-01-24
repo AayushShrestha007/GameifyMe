@@ -17,10 +17,17 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import GameOptionManagement from './pages/admin/GameOptionManagement';
 import Register from './pages/common/authentication/Register';
 import Cart from './pages/customer/Cart';
-import ChooseStyle from './pages/customer/ChooseStyle';
-import GameOptionPage from './pages/customer/GameOptionPage';
 import Checkout from './pages/customer/Checkout';
+import ChooseStyle from './pages/customer/ChooseStyle';
+import ContactSuccess from './pages/customer/ContactSuccess';
+import ContactUs from './pages/customer/ContactUs';
+import Faqs from './pages/customer/Faqs';
+import GameOptionPage from './pages/customer/GameOptionPage';
 import Home from './pages/customer/Home';
+import OrderHistory from './pages/customer/OrderHistory';
+import OrderSuccess from './pages/customer/OrderSuccess';
+import OurStory from './pages/customer/OurStory';
+import Reviews from './pages/customer/Reviews';
 import AdminRoutes from './protected_routes/AdminRoutes';
 //toast config
 import { ToastContainer } from 'react-toastify';
@@ -42,7 +49,13 @@ function App() {
           <Route path="/game-option/:id" element={<GameOptionPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-
+          <Route path="/order-history" element={<OrderHistory />} />
+          <Route path="/our-story" element={<OurStory />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/faqs" element={<Faqs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/contact-success" element={<ContactSuccess />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
 
           {/* Only Admin Accessible Routes */}
           <Route element={<AdminRoutes />}>

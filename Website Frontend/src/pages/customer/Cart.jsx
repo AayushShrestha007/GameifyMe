@@ -311,11 +311,7 @@ const CartPage = () => {
                 {cartItems.map((item) => (
                   <CartItemRow key={item._id}>
                     <ProductImage
-                      src={
-                        item.gameOption?.exampleImages?.[0]
-                          ? `http://localhost:5500/${item.gameOption.exampleImages[0]}`
-                          : '/assets/path_to_main_product.jpg'
-                      }
+                      src={`http://localhost:5500/${item.gameOption.exampleImages[0]}`}
                       alt={item.gameOption?.name || 'Cart product'}
                     />
                     <CartItemDetails>

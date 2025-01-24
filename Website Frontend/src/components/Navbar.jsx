@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { CartContext } from '../../src/context/cartContext';
 
@@ -93,20 +93,28 @@ const DropdownContent = styled.ul`
   padding: 0.5rem;
   margin: 0;
   border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   display: ${(props) => (props.open ? 'block' : 'none')};
+  min-width: 150px;
+  z-index: 1000; /* Ensure dropdown is above other elements */
 
   li {
     padding: 0.5rem 1rem;
-    a {
+    a, button {
       color: #333;
       text-decoration: none;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
     }
     &:hover {
       background-color: #f2f2f2;
     }
   }
 `;
-
 
 const RightSection = styled.div`
   display: flex;
@@ -151,11 +159,57 @@ const SmallScreenStyles = styled.div`
   }
 `;
 
+const UserName = styled.div`
+  position: relative;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+`;
+
+const UserDropdownContent = styled.ul`
+  position: absolute;
+  top: 30px; 
+  right: 0;
+  background-color: #fff;
+  list-style: none;
+  padding: 0.5rem;
+  margin: 0;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: ${(props) => (props.open ? 'block' : 'none')};
+  min-width: 150px;
+  z-index: 1000; /* Ensure dropdown is above other elements */
+
+  li {
+    padding: 0.5rem 1rem;
+    a, button {
+      color: #333;
+      text-decoration: none;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    &:hover {
+      background-color: #f2f2f2;
+    }
+  }
+`;
+
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [getHelpDropdownOpen, setGetHelpDropdownOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const { cartCount } = useContext(CartContext);
+  const navigate = useNavigate();
+
+  const getHelpRef = useRef();
+  const userDropdownRef = useRef();
 
   const rawData = localStorage.getItem('user');
   let user = null;
@@ -166,16 +220,52 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
-
     if (menuOpen) {
-      setDropdownOpen(false);
+      setGetHelpDropdownOpen(false);
+      setUserDropdownOpen(false);
     }
   };
 
-  const toggleDropdown = (e) => {
+  // Toggle Get Help dropdown
+  const toggleGetHelpDropdown = (e) => {
     e.stopPropagation();
-    setDropdownOpen(!dropdownOpen);
+    setGetHelpDropdownOpen(!getHelpDropdownOpen);
+    setUserDropdownOpen(false); // Close user dropdown if open
   };
+
+  // Toggle User dropdown
+  const toggleUserDropdown = (e) => {
+    e.stopPropagation();
+    setUserDropdownOpen(!userDropdownOpen);
+    setGetHelpDropdownOpen(false); // Close Get Help dropdown if open
+  };
+
+  // Logout handler
+  const handleLogout = () => {
+
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+
+
+    // Redirect to login page
+    navigate('/');
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (getHelpRef.current && !getHelpRef.current.contains(event.target)) {
+        setGetHelpDropdownOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <SmallScreenStyles>
@@ -195,9 +285,11 @@ const Navbar = () => {
                 <Link to="/our-story">Our Story</Link>
               </NavItem>
 
-              <NavItem style={{ position: 'relative' }}>
-                <DropdownItem onClick={toggleDropdown}>Get Help</DropdownItem>
-                <DropdownContent open={dropdownOpen}>
+
+
+              <NavItem style={{ position: 'relative' }} ref={getHelpRef}>
+                <DropdownItem onClick={toggleGetHelpDropdown}>Get Help ▾</DropdownItem>
+                <DropdownContent open={getHelpDropdownOpen}>
                   <li>
                     <Link to="/contact-us">Contact Us</Link>
                   </li>
@@ -214,16 +306,32 @@ const Navbar = () => {
 
 
           <RightSection>
-            <Link to="/cart">
+            {user ? (
+              <Link to="/cart">
+                <CartButton>
+                  <img src="/assets/icons/cart.png" alt="Cart" />
+                  {cartCount > 0 && <CartBadge />}
+                </CartButton>
+              </Link>
+            ) : (<Link to="/login">
               <CartButton>
                 <img src="/assets/icons/cart.png" alt="Cart" />
                 {cartCount > 0 && <CartBadge />}
               </CartButton>
-            </Link>
+            </Link>)}
+
             {user ? (
-              <span style={{ color: 'white', fontSize: '0.9rem' }}>
-                Hi, {user.firstName}
-              </span>
+              <UserName ref={userDropdownRef} onClick={toggleUserDropdown}>
+                Hi, {user.firstName} ▾
+                <UserDropdownContent open={userDropdownOpen}>
+                  <li>
+                    <Link to="/order-history">Order History</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout}>Logout</button>
+                  </li>
+                </UserDropdownContent>
+              </UserName>
             ) : (
               <Link to="/login">
                 <LoginButton>Login</LoginButton>

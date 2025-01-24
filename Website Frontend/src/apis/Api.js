@@ -39,7 +39,7 @@ export const getGameOptionByIdApi = (id) => Api.get(`/api/gameOption/get-game-op
 export const addItemToCart = (data) => Api.post("/api/cart/add-to-cart", data, config);
 
 //create API to get cart item of currently logged in user
-export const getCartItem = () => Api.get("/api/cart//get-cart-items", config);
+export const getCartItem = () => Api.get("/api/cart/get-cart-items", config);
 
 //create API to increase cart item of currently logged in user
 export const increaseCartItem = (data) => Api.post("/api/cart/increase-cart-items", data, config);
@@ -52,3 +52,12 @@ export const removeCartItem = (data) => Api.post("/api/cart/remove-cart-items", 
 
 //create API to place order
 export const placeOrder = (data) => Api.post("/api/order/create-order", data, config);
+
+//create API to get order history
+export const getOrderHistory = () => Api.get("/api/order/order-history", config);
+
+//create API to initiate khalti payment
+export const khaltiInitiate = (data) => Api.post("/api/khalti/initialize-khalti", data, config);
+
+//create API to send contact us email
+export const sendContactEmail = (data) => Api.post("/api/email/contact", data);

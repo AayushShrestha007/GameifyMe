@@ -1,6 +1,71 @@
 const Order = require('../models/orderModel');
 const OrderItem = require('../models/orderItemModel');
 const CartItem = require('../models/cartItemModel');
+const mongoose = require('mongoose');
+
+
+const getOrderHistory = async (req, res) => {
+    try {
+        // Log the incoming request for debugging
+        console.log('Received request to fetch order history.');
+
+        // Ensure the user is authenticated
+        const userId = req.user.id;
+        console.log(`Authenticated user ID: ${userId}`);
+
+        // Validate the userId format
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.warn(`Invalid user ID format: ${userId}`);
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid user ID format.',
+            });
+        }
+
+        // Fetch all orders for the user, sorted by creation date (most recent first)
+        const orders = await Order.find({ user: userId })
+            .populate({
+                path: 'orderItems',
+                populate: {
+                    path: 'gameOption',
+                    model: 'gameOptions', // Ensure this matches your GameOption model name
+                },
+            })
+            .sort({ createdAt: -1 });
+
+        console.log(`Number of orders found: ${orders.length}`);
+
+        // If orders are found, log a summary of each order
+        if (orders.length > 0) {
+            orders.forEach((order, index) => {
+                console.log(`Order ${index + 1}: ID=${order._id}, Status=${order.status}, TotalPrice=${order.totalPrice}`);
+            });
+        }
+
+        if (!orders.length) {
+            console.log('No orders found for the user.');
+            return res.status(200).json({
+                success: true,
+                message: 'No orders found.',
+                orders: [],
+            });
+        }
+
+        // Optionally, log the complete orders data (be cautious with sensitive information)
+        // console.log('Orders Data:', JSON.stringify(orders, null, 2));
+
+        return res.status(200).json({
+            success: true,
+            orders,
+        });
+    } catch (error) {
+        console.error('Error fetching order history:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error.',
+        });
+    }
+};
 
 const placeOrder = async (req, res) => {
     try {
@@ -113,6 +178,9 @@ const placeOrder = async (req, res) => {
     }
 };
 
+
+
+
 module.exports = {
-    placeOrder,
+    placeOrder, getOrderHistory
 };

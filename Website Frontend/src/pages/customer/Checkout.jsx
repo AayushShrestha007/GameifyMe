@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { getCartItem, placeOrder } from '../../apis/Api';
+import { getCartItem, khaltiInitiate } from '../../apis/Api';
 import Navbar from '../../components/Navbar';
 // ^ Import getCartItem from your API file
 
@@ -208,31 +208,58 @@ const Checkout = () => {
     };
 
     // 3. handlePlaceOrder: gather shipping info & call placeOrder API
-    const handlePlaceOrder = async () => {
-        try {
-            // gather data 
-            const data = {
-                email,
-                phoneNumber,
-                firstName,
-                lastName,
-                address,
-                city,
-                postCode,
-                // you might pass shippingCost / subTotal / grandTotal as well
-            };
+    // const handlePlaceOrder = async () => {
+    //     try {
+    //         // gather data 
+    //         const data = {
+    //             email,
+    //             phoneNumber,
+    //             firstName,
+    //             lastName,
+    //             address,
+    //             city,
+    //             postCode,
+    //             // you might pass shippingCost / subTotal / grandTotal as well
+    //         };
 
-            // call placeOrder
-            const response = await placeOrder(data);
+    //         // call placeOrder
+    //         const response = await placeOrder(data);
+    //         if (response.data.success) {
+    //             toast.success("Order placed successfully!");
+    //             // maybe navigate to an order success page or clear cart
+    //         } else {
+    //             toast.error(response.data.message || "Failed to place order.");
+    //         }
+    //     } catch (error) {
+    //         console.error('Place order error:', error);
+    //         toast.error('Error placing order');
+    //     }
+    // };
+
+    //handle pay with khalti
+    const handlePayWithKhalti = async () => {
+        // Ensure necessary data is available
+        if (!cartItems.length) {
+            toast.error("Cart is empty");
+            return;
+        }
+
+        const gameOptionId = cartItems[0]?.gameOption?._id; // Use first item's gameOption as an example
+        const totalPrice = grandTotal; // totalPrice in rupees; ensure correct unit conversion if necessary
+        const website_url = window.location.origin; // Current site URL
+
+        try {
+            const response = await khaltiInitiate({ gameOptionId, totalPrice, website_url, email, phoneNumber, firstName, lastName, address, city, postCode });
             if (response.data.success) {
-                toast.success("Order placed successfully!");
-                // maybe navigate to an order success page or clear cart
+                const paymentDetails = response.data.payment;
+                // Redirect user to Khalti payment URL to complete payment
+                window.location.href = paymentDetails.payment_url;
             } else {
-                toast.error(response.data.message || "Failed to place order.");
+                toast.error(response.data.message);
             }
         } catch (error) {
-            console.error('Place order error:', error);
-            toast.error('Error placing order');
+            console.error("Payment initiation error:", error);
+            toast.error("Payment initiation failed.");
         }
     };
 
@@ -321,7 +348,7 @@ const Checkout = () => {
 
                     {/* 9. Place Order button */}
                     <ButtonContainer>
-                        <PlaceOrderButton onClick={handlePlaceOrder}>
+                        <PlaceOrderButton onClick={handlePayWithKhalti}>
                             Place Order
                         </PlaceOrderButton>
                     </ButtonContainer>
@@ -354,9 +381,9 @@ const Checkout = () => {
 
                     {/* 3. Sub total */}
                     <p style={{ fontSize: '18px', fontWeight: 'bold' }}>
-                        Sub Total:
+
                         <span style={{ color: '#ED4708', fontSize: '18px', fontWeight: 'bold', marginLeft: '5px' }}>
-                            Rs 600
+                            Rs {subTotal}
                         </span>
                     </p>
                     {/* 4. Shipping cost */}

@@ -22,6 +22,7 @@ const CustomerImage = styled.img`
 
 const ContentContainer = styled.div`
   flex: 1;
+  text-align: left;
 `;
 
 const StarContainer = styled.div`
